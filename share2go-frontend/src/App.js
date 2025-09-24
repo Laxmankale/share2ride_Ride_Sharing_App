@@ -20,38 +20,7 @@ const loggedInRole = loggedInUser ? loggedInUser.role : null;
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-
-      <Routes>
-        {/* ✅ Common Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/booking-success" element={<BookingSuccess />} />
-
-        {/* ✅ Routes for Passenger */}
-        {loggedInRole === "Passenger" && (
-          <>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            <Route
-              path="/my-bookings"
-              element={<MyBookings userId={loggedInUserId} />}
-            />
-          </>
-        )}
-
-        {/* ✅ Routes for Driver */}
-        {loggedInRole === "Driver" && (
-          <>
-            <Route path="/" element={<PostRide />} />
-            <Route path="/post-ride" element={<PostRide />} />
-            <Route path="/driver-bookings" element={<DriverBookings />} />
-            <Route path="/my-posted-rides" element={<DriverRides />} />
-          </>
-        )}
-      </Routes>
-    </Router>
+    <div>Wellcome to Share2Go</div>
   );
 }
 
