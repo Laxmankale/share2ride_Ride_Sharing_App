@@ -33,13 +33,11 @@ public class UserServiceImpl implements UserService {
 		return UserMapper.toDTO(user);
 	}
 
-	// Get all users
 	@Override
 	public List<UserDTO> getAllUser() {
 		return userRepository.findAll().stream().map(UserMapper::toDTO).toList();
 	}
 
-	// Update user
 	@Override
 	public UserDTO updateUser(Long id, UserDTO userDTO) {
 		User existingUser = userRepository.findById(id)
@@ -48,7 +46,7 @@ public class UserServiceImpl implements UserService {
 		existingUser.setName(userDTO.getName());
 		existingUser.setEmail(userDTO.getEmail());
 		existingUser.setPhone(userDTO.getPhone());
-		existingUser.setPassword(userDTO.getPassword());
+		existingUser.setPassword(userDTO.getPassword()); // plain password
 		existingUser.setRole(userDTO.getRole());
 
 		User updatedUser = userRepository.save(existingUser);

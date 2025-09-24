@@ -1,7 +1,10 @@
 package com.share2go.controller;
 
+import com.share2go.dto.LoginDTO;
 import com.share2go.dto.UserDTO;
 import com.share2go.service.UserService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,14 +19,15 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	@PostMapping("/login")
+	public ResponseEntity<UserDTO> login(@RequestBody LoginDTO loginDTO) {
+		UserDTO user = userService.login(loginDTO.getEmail(), loginDTO.getPassword());
+		return ResponseEntity.ok(user);
+	}
+
 	@PostMapping("/register")
 	public UserDTO registerUser(@RequestBody UserDTO userDTO) {
 		return userService.createUser(userDTO);
-	}
-
-	@PostMapping("/login")
-	public UserDTO login(@RequestParam String email, @RequestParam String password) {
-		return userService.login(email, password);
 	}
 
 	@GetMapping

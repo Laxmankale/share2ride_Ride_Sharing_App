@@ -1,7 +1,6 @@
 package com.share2go.service;
 
 import java.util.List;
-
 import com.share2go.dto.UserDTO;
 
 public interface UserService {
@@ -16,6 +15,5 @@ public interface UserService {
 
 	void deleteUser(Long id);
 
-	// Extra feature: Login
 	UserDTO login(String email, String password);
 }
