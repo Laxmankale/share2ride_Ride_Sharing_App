@@ -1,10 +1,10 @@
-import React from 'react';
+// Register page import React from 'react';
 
-function Login({ onNavigate }) {
+function Register({ onNavigate }) {
   return (
     <div className="bg-white rounded-lg shadow p-8 text-center">
-      <h3 className="text-xl font-semibold mb-4">Login Page</h3>
-      <p className="mb-6">This will be your login form!</p>
+      <h3 className="text-xl font-semibold mb-4">Register Page</h3>
+      <p className="mb-6">This will be your registration form!</p>
       
       <button 
         onClick={() => onNavigate('home')}
@@ -16,4 +16,4 @@ function Login({ onNavigate }) {
   );
 }
 
-export default Login;
+export default Register;

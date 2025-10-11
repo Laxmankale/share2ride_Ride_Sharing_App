@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Share2goBackendApplication<share2go>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.share2go.Share2goBackendApplication",
+            "projectName": "share2go",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
