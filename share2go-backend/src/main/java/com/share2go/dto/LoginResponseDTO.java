@@ -13,7 +13,6 @@ public class LoginResponseDTO {
         this.role = role;
     }
 
-    // Getters and Setters
     public String getToken() {
         return token;
     }

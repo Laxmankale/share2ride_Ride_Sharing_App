@@ -45,9 +45,9 @@ public class Ride {
 
 	@ManyToMany
 	private List<User> passengers;
-	
+
 	@OneToMany(mappedBy = "ride", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JsonIgnoreProperties("ride") // prevent infinite recursion
+	@JsonIgnoreProperties("ride")
 	private List<Booking> bookings;
 
 	public Long getId() {

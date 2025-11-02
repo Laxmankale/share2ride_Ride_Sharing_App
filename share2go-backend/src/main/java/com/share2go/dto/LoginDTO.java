@@ -5,15 +5,7 @@ public class LoginDTO {
 	private String email;
 	private String password;
 
-	// Default constructor
 	public LoginDTO() {
-	}
-
-	public LoginDTO(String username, String email) {
-		super();
-
-		this.email = email;
-		this.password = password;
 	}
 
 	public String getEmail() {
