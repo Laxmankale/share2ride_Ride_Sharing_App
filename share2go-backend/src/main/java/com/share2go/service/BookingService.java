@@ -19,4 +19,8 @@ public interface BookingService {
 	BookingDTO updateBooking(Long id, BookingDTO bookingDTO);
 
 	void cancelBooking(Long id);
+
+	BookingDTO acceptBooking(Long id);
+
+	BookingDTO rejectBooking(Long id);
 }

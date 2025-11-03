@@ -41,15 +41,12 @@ public class BookingServiceImpl implements BookingService {
 		User passenger = userRepository.findById(bookingDTO.getPassengerId())
 				.orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
 
-		if (ride.getAvailableSeats() < bookingDTO.getNumberOfSeats()) {
-			throw new IllegalArgumentException("Not enough available seats");
+		if (bookingDTO.getNumberOfSeats() <= 0) {
+			throw new IllegalArgumentException("Requested seats must be greater than zero");
 		}
 
-		ride.setAvailableSeats(ride.getAvailableSeats() - bookingDTO.getNumberOfSeats());
-		rideRepository.save(ride);
-
 		bookingDTO.setBookingTime(LocalDateTime.now());
-		bookingDTO.setStatus("CONFIRMED");
+		bookingDTO.setStatus("PENDING");
 
 		Booking booking = BookingMapper.toEntity(bookingDTO, ride, passenger);
 		Booking savedBooking = bookingRepository.save(booking);
@@ -104,11 +101,49 @@ public class BookingServiceImpl implements BookingService {
 		Booking booking = bookingRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
-		Ride ride = booking.getRide();
-		ride.setAvailableSeats(ride.getAvailableSeats() + booking.getNumberOfSeats());
-		rideRepository.save(ride);
+		if ("CONFIRMED".equalsIgnoreCase(booking.getStatus()) || "ACCEPTED".equalsIgnoreCase(booking.getStatus())) {
+			Ride ride = booking.getRide();
+			ride.setAvailableSeats(ride.getAvailableSeats() + booking.getNumberOfSeats());
+			rideRepository.save(ride);
+		}
 
 		booking.setStatus("CANCELLED");
 		bookingRepository.save(booking);
+	}
+
+	@Override
+	public BookingDTO acceptBooking(Long id) {
+		Booking booking = bookingRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+		if ("CONFIRMED".equalsIgnoreCase(booking.getStatus()) || "ACCEPTED".equalsIgnoreCase(booking.getStatus())) {
+			return BookingMapper.toDTO(booking);
+		}
+
+		Ride ride = booking.getRide();
+		int requestedSeats = booking.getNumberOfSeats();
+		if (ride.getAvailableSeats() < requestedSeats) {
+			throw new IllegalArgumentException("Not enough available seats to accept booking");
+		}
+		ride.setAvailableSeats(ride.getAvailableSeats() - requestedSeats);
+		rideRepository.save(ride);
+
+		booking.setStatus("CONFIRMED");
+		Booking saved = bookingRepository.save(booking);
+		return BookingMapper.toDTO(saved);
+	}
+
+	@Override
+	public BookingDTO rejectBooking(Long id) {
+		Booking booking = bookingRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+
+		if ("CONFIRMED".equalsIgnoreCase(booking.getStatus()) || "ACCEPTED".equalsIgnoreCase(booking.getStatus())) {
+			throw new IllegalStateException("Cannot reject a confirmed booking. Cancel instead.");
+		}
+
+		booking.setStatus("REJECTED");
+		Booking saved = bookingRepository.save(booking);
+		return BookingMapper.toDTO(saved);
 	}
 }

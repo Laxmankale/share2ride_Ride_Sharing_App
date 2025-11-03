@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 
-function Dashboard({ userName = 'John Doe', userId = 1 }) {
+function Dashboard({ userName = 'John Doe', userId: propUserId }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userId = user?.id ?? propUserId ?? 1;
   const [stats, setStats] = useState({
     totalRides: 0,
     activeRides: 0,
@@ -84,6 +87,36 @@ function Dashboard({ userName = 'John Doe', userId = 1 }) {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAccept = async (bookingId) => {
+    try {
+      await axios.put(`http://localhost:8080/api/bookings/${bookingId}/accept`);
+      await fetchDashboardData();
+    } catch (e) {
+      console.error('Accept failed', e);
+      alert(e?.response?.data?.message || 'Failed to accept booking');
+    }
+  };
+
+  const handleReject = async (bookingId) => {
+    try {
+      await axios.put(`http://localhost:8080/api/bookings/${bookingId}/reject`);
+      await fetchDashboardData();
+    } catch (e) {
+      console.error('Reject failed', e);
+      alert(e?.response?.data?.message || 'Failed to reject booking');
+    }
+  };
+
+  const handleCancel = async (bookingId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/bookings/${bookingId}`);
+      await fetchDashboardData();
+    } catch (e) {
+      console.error('Cancel failed', e);
+      alert(e?.response?.data?.message || 'Failed to cancel booking');
     }
   };
 
@@ -275,11 +308,27 @@ function Dashboard({ userName = 'John Doe', userId = 1 }) {
                             <div>
                               <p className="font-medium text-gray-800">{booking.passengerName}</p>
                               <p className="text-xs text-gray-500">Passenger ID: {booking.passengerId}</p>
+                              <p className="text-xs">
+                                <span className={`px-2 py-0.5 rounded-full text-white ${booking.status === 'PENDING' ? 'bg-yellow-500' : booking.status === 'CONFIRMED' ? 'bg-green-600' : booking.status === 'REJECTED' ? 'bg-red-600' : booking.status === 'CANCELLED' ? 'bg-gray-500' : 'bg-blue-600'}`}>
+                                  {booking.status}
+                                </span>
+                              </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold text-gray-800">{booking.seats} seat{booking.seats > 1 ? 's' : ''}</p>
-                            <p className="text-sm text-green-600 font-semibold">₹{booking.seats * ride.pricePerSeat}</p>
+                            <p className="font-semibold text-gray-800">{booking.numberOfSeats} seat{booking.numberOfSeats > 1 ? 's' : ''}</p>
+                            <p className="text-sm text-green-600 font-semibold">₹{booking.numberOfSeats * ride.pricePerSeat}</p>
+                            <div className="mt-2 flex gap-2 justify-end">
+                              {booking.status === 'PENDING' && (
+                                <>
+                                  <button onClick={() => handleAccept(booking.id)} className="px-3 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700">Accept</button>
+                                  <button onClick={() => handleReject(booking.id)} className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700">Reject</button>
+                                </>
+                              )}
+                              {(booking.status === 'CONFIRMED' || booking.status === 'ACCEPTED') && (
+                                <button onClick={() => handleCancel(booking.id)} className="px-3 py-1 text-sm rounded bg-gray-600 text-white hover:bg-gray-700">Cancel</button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -288,8 +337,8 @@ function Dashboard({ userName = 'John Doe', userId = 1 }) {
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-gray-700">Total Booked:</span>
                         <span className="font-bold text-gray-800">
-                          {ride.bookings.reduce((sum, b) => sum + b.seats, 0)} seats / 
-                          ₹{ride.bookings.reduce((sum, b) => sum + (b.seats * ride.pricePerSeat), 0)}
+                          {ride.bookings.reduce((sum, b) => sum + (b.numberOfSeats || 0), 0)} seats / 
+                          ₹{ride.bookings.reduce((sum, b) => sum + ((b.numberOfSeats || 0) * ride.pricePerSeat), 0)}
                         </span>
                       </div>
                     </div>
