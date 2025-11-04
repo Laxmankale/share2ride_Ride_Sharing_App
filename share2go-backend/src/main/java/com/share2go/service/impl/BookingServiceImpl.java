@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.share2go.dto.BookingDTO;
 import com.share2go.mapper.BookingMapper;
+import com.share2go.dto.NotificationDTO;
+import com.share2go.service.NotificationService;
 import com.share2go.model.Booking;
 import com.share2go.model.Ride;
 import com.share2go.model.User;
@@ -24,13 +26,15 @@ public class BookingServiceImpl implements BookingService {
 	private final BookingRepository bookingRepository;
 	private final RideRepository rideRepository;
 	private final UserRepository userRepository;
+	private final NotificationService notificationService;
 
 	public BookingServiceImpl(BookingRepository bookingRepository, RideRepository rideRepository,
-			UserRepository userRepository) {
+			UserRepository userRepository, NotificationService notificationService) {
 		super();
 		this.bookingRepository = bookingRepository;
 		this.rideRepository = rideRepository;
 		this.userRepository = userRepository;
+		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -50,6 +54,16 @@ public class BookingServiceImpl implements BookingService {
 
 		Booking booking = BookingMapper.toEntity(bookingDTO, ride, passenger);
 		Booking savedBooking = bookingRepository.save(booking);
+
+		// Notify the driver about a new booking request
+		NotificationDTO n = new NotificationDTO();
+		n.setRecipientId(ride.getDriver().getId());
+		n.setType("BOOKING_REQUEST");
+		n.setMessage("New booking request: " + passenger.getName() + " requested " + bookingDTO.getNumberOfSeats()
+				+ " seat(s).");
+		n.setRideId(ride.getId());
+		n.setBookingId(savedBooking.getId());
+		notificationService.createNotification(n);
 
 		return BookingMapper.toDTO(savedBooking);
 	}
@@ -130,6 +144,14 @@ public class BookingServiceImpl implements BookingService {
 
 		booking.setStatus("CONFIRMED");
 		Booking saved = bookingRepository.save(booking);
+		// Notify passenger of acceptance
+		NotificationDTO n = new NotificationDTO();
+		n.setRecipientId(booking.getPassenger().getId());
+		n.setType("BOOKING_ACCEPTED");
+		n.setMessage("Your booking was accepted for " + ride.getOrigin() + " → " + ride.getDestination() + ".");
+		n.setRideId(ride.getId());
+		n.setBookingId(saved.getId());
+		notificationService.createNotification(n);
 		return BookingMapper.toDTO(saved);
 	}
 
@@ -144,6 +166,15 @@ public class BookingServiceImpl implements BookingService {
 
 		booking.setStatus("REJECTED");
 		Booking saved = bookingRepository.save(booking);
+		// Notify passenger of rejection
+		NotificationDTO n = new NotificationDTO();
+		n.setRecipientId(booking.getPassenger().getId());
+		n.setType("BOOKING_REJECTED");
+		n.setMessage("Your booking was rejected for " + booking.getRide().getOrigin() + " → "
+				+ booking.getRide().getDestination() + ".");
+		n.setRideId(booking.getRide().getId());
+		n.setBookingId(saved.getId());
+		notificationService.createNotification(n);
 		return BookingMapper.toDTO(saved);
 	}
 }
