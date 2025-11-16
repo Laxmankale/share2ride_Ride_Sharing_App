@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.share2go.dto.RideDTO;
@@ -22,6 +23,7 @@ public class RideController {
 	}
 
 	@PostMapping("/driver/{driverId}")
+	@PreAuthorize("hasRole('Driver')")
 	public ResponseEntity<RideDTO> createRide(@PathVariable Long driverId, @RequestBody RideDTO rideDTO) {
 		return ResponseEntity.ok(rideService.createRide(rideDTO, driverId));
 	}
@@ -37,23 +39,27 @@ public class RideController {
 	}
 
 	@GetMapping("/search")
+	@PreAuthorize("permitAll()")
 	public ResponseEntity<List<RideDTO>> searchRides(@RequestParam String origin, @RequestParam String destination,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime) {
 		return ResponseEntity.ok(rideService.searchRides(origin, destination, departureTime));
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('Driver')")
 	public ResponseEntity<RideDTO> updateRide(@PathVariable Long id, @RequestBody RideDTO rideDTO) {
 		return ResponseEntity.ok(rideService.updateRide(id, rideDTO));
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('Driver')")
 	public ResponseEntity<String> deleteRide(@PathVariable Long id) {
 		rideService.deleteRide(id);
 		return ResponseEntity.ok("Ride deleted successfully");
 	}
 
 	@GetMapping("/driver/{driverId}")
+	@PreAuthorize("hasRole('Driver')")
 	public ResponseEntity<List<RideDTO>> getRidesByDriver(@PathVariable Long driverId) {
 		return ResponseEntity.ok(rideService.getRidesByDriver(driverId));
 	}
