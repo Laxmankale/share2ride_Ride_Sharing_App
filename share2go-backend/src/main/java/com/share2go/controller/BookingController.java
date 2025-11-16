@@ -3,6 +3,7 @@ package com.share2go.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.share2go.dto.BookingDTO;
@@ -21,6 +22,7 @@ public class BookingController {
 	}
 
 	@PostMapping
+	@PreAuthorize("hasRole('Passenger')")
 	public ResponseEntity<BookingDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
 		return ResponseEntity.ok(bookingService.createBooking(bookingDTO));
 	}
@@ -46,6 +48,7 @@ public class BookingController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('Passenger')")
 	public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id, @RequestBody BookingDTO bookingDTO) {
 		return ResponseEntity.ok(bookingService.updateBooking(id, bookingDTO));
 	}

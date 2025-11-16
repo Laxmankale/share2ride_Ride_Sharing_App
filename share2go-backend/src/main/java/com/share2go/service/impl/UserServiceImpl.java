@@ -1,8 +1,13 @@
 package com.share2go.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.share2go.dto.UserDTO;
 import com.share2go.mapper.UserMapper;
@@ -14,14 +19,18 @@ import com.share2go.service.UserService;
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-	public UserServiceImpl(UserRepository userRepository) {
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		User user = UserMapper.toEntity(userDTO);
+		// Encode password before saving
+		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User savedUser = userRepository.save(user);
 		return UserMapper.toDTO(savedUser);
 	}
@@ -72,4 +81,25 @@ public class UserServiceImpl implements UserService {
 
 		return UserMapper.toDTO(user);
 	}
+
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		var user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		return new org.springframework.security.core.userdetails.User(
+				user.getEmail(),
+				user.getPassword(),
+				List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole())));
+	}
+
+	@Override
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
+	@Override
+	public Optional<User> findById(Long id) {
+		return userRepository.findById(id);
+	}
+
 }
