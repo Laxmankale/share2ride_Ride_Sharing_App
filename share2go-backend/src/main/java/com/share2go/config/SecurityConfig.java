@@ -30,6 +30,14 @@ public class SecurityConfig {
         var jwtFilter = new JwtAuthenticationFilter(jwtUtil, userService);
 
         http
+                .cors(cors -> cors.configurationSource(request -> {
+                    var config = new org.springframework.web.cors.CorsConfiguration();
+                    config.addAllowedOrigin("http://localhost:5173");
+                    config.addAllowedHeader("*");
+                    config.addAllowedMethod("*");
+                    config.setAllowCredentials(true);
+                    return config;
+                }))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
@@ -38,7 +46,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        // allow frames for H2 console (if used)
         http.headers(h -> h.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
