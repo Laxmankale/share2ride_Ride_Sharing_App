@@ -1,34 +1,27 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-function Home() {
-  const navigate = useNavigate();
+export default function Home() {
+  const { user } = useAuth();
 
   return (
-    <div className="bg-white rounded-lg shadow p-8 text-center">
-      <h2 className="text-2xl font-semibold mb-4">Welcome to Share2Go!</h2>
-      <p className="text-gray-600 mb-6">Your ride-sharing app</p>
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold mb-4">Home Page</h1>
 
-      <div className="space-x-4">
-        <button 
-          onClick={() => navigate('/login')}
-          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+      {!user && (
+        <Link
+          to="/login"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Login
-        </button>
-        <button 
-          onClick={() => navigate('/register')}
-          className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-        >
-          Register
-        </button>
-      </div>
+          Go to Login
+        </Link>
+      )}
 
-      <div className="mt-8">
-        <p className="text-lg">Choose an option above to get started!</p>
-      </div>
+      {user && (
+        <p className="text-lg text-gray-700">
+          Welcome, <b>{user.email}</b>! You are logged in as <b>{user.role}</b>.
+        </p>
+      )}
     </div>
   );
 }
-
-export default Home;
