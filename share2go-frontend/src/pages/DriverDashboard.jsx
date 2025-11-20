@@ -171,8 +171,16 @@ export default function DriverDashboard() {
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
                       <button
-                        className="px-2 py-1 border rounded text-sm"
-                        onClick={() => setEditing(r)}
+                        className={`px-2 py-1 border rounded text-sm ${
+                          r.passengerIds?.length > 0 ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={() => {
+                          if (r.passengerIds?.length > 0) {
+                            alert("Cannot edit a ride with booked passengers.");
+                            return;
+                          }
+                          setEditing(r);
+                        }}
                       >
                         Edit
                       </button>
