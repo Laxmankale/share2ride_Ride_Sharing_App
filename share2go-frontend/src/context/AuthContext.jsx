@@ -4,35 +4,75 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
+    if (!token) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
+      return;
+    }
 
+    // Save token to localStorage
+    localStorage.setItem("token", token);
+
+    // If saved user exists AND has id, don't overwrite.
+    const savedUserRaw = localStorage.getItem("user");
+    if (savedUserRaw) {
       try {
-        const decoded = jwtDecode(token);
-        setUser({
-          id: decoded.userId,
-          email: decoded.sub,
-          role: decoded.role,
-        });
+        const parsed = JSON.parse(savedUserRaw);
+        if (parsed && parsed.id) {
+          setUser(parsed);  // valid user
+          return;
+        }
       } catch (e) {
-        console.error("Invalid token:", e);
-        logout();
+        // corrupted user object → fall through to decode
       }
+    }
+
+    // Fallback: decode token if no valid local user found
+    try {
+      const decoded = jwtDecode(token);
+
+      const decodedUser = {
+        id: decoded.uid,
+        email: decoded.sub,
+        role: decoded.role,
+      };
+
+      setUser(decodedUser);
+      localStorage.setItem("user", JSON.stringify(decodedUser));
+    } catch (err) {
+      console.error("Invalid token:", err);
+      logout();
     }
   }, [token]);
 
-  const login = (token) => {
+  // FIXED LOGIN — maps backend userData into correct FE structure
+  const login = (token, userData) => {
+    const correctedUser = {
+      id: userData.userId,               // backend: userId
+      email: userData.email || jwtDecode(token).sub, // fallback from token
+      role: userData.role,               // backend provides role
+    };
+
     setToken(token);
+    setUser(correctedUser);
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(correctedUser));
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   return (
