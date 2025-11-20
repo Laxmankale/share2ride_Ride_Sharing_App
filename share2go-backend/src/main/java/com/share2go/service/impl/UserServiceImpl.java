@@ -29,6 +29,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		User user = UserMapper.toEntity(userDTO);
+		// Set default role to Driver if not specified
+		if (user.getRole() == null) {
+			user.setRole(User.Role.Driver);
+		}
 		// Encode password before saving
 		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		User savedUser = userRepository.save(user);

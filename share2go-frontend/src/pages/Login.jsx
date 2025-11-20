@@ -17,9 +17,16 @@ export default function Login() {
 
     try {
       const data = await loginApi(email, password);
-      login(data.accessToken);
+
+      // Extract everything backend sends:
+      const { accessToken, id, name, role } = data;
+
+      // Pass token + user object
+      login(accessToken, { id, name, role });
+
       navigate("/");
     } catch (err) {
+      console.error(err);
       setError("Invalid email or password");
     }
   };

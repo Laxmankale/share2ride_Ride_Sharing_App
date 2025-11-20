@@ -17,6 +17,16 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-4">
+
+        {user?.role === "Driver" && (
+          <Link
+            to="/publish-ride"
+            className="text-blue-600 font-semibold hover:underline"
+          >
+            Publish Ride
+          </Link>
+        )}
+
         {!user && (
           <Link
             to="/login"
@@ -25,7 +35,7 @@ export default function Navbar() {
             Login
           </Link>
         )}
-
+``
         {user && (
           <>
             <span className="text-gray-600 text-sm">
@@ -44,3 +54,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
