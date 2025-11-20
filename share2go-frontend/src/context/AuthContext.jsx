@@ -43,6 +43,7 @@ export function AuthProvider({ children }) {
         id: decoded.uid,
         email: decoded.sub,
         role: decoded.role,
+         name: user?.name || null,
       };
 
       setUser(decodedUser);
@@ -57,6 +58,7 @@ export function AuthProvider({ children }) {
   const login = (token, userData) => {
     const correctedUser = {
       id: userData.userId,               // backend: userId
+      name: userData.name,
       email: userData.email || jwtDecode(token).sub, // fallback from token
       role: userData.role,               // backend provides role
     };

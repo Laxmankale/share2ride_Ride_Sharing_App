@@ -11,47 +11,58 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-white shadow px-6 py-4 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-bold text-blue-600">
+    <nav className="w-full bg-white shadow-md px-8 py-4 flex justify-between items-center">
+      <Link to="/" className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition">
         Share2Go
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
 
         {user?.role === "Driver" && (
-          <Link
-            to="/publish-ride"
-            className="text-blue-600 font-semibold hover:underline"
-          >
-            Publish Ride
-          </Link>
+          <>
+            <Link
+              to="/publish-ride"
+              className="text-blue-600 font-medium hover:text-blue-800 transition"
+            >
+              Publish Ride
+            </Link>
+
+            <Link
+              to="/driver/dashboard"
+              className="text-blue-600 font-medium hover:text-blue-800 transition"
+            >
+              Dashboard
+            </Link>
+          </>
         )}
 
         {!user && (
           <Link
             to="/login"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
           >
             Login
           </Link>
         )}
-``
+
         {user && (
-          <>
-            <span className="text-gray-600 text-sm">
-              {user.email} ({user.role})
+          <div className="flex items-center gap-4">
+
+            <span className="text-gray-700 text-sm font-semibold">
+              {user.name} {" "}
+              <span className="text-gray-500 font-normal">({user.role})</span>
             </span>
 
+            {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
             >
               Logout
             </button>
-          </>
+          </div>
         )}
       </div>
     </nav>
   );
 }
-
