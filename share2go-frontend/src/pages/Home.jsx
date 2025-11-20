@@ -19,9 +19,27 @@ export default function Home() {
       )}
 
       {user && (
-        <p className="text-lg text-gray-700">
-          Welcome, <b>{user.email}</b>! You are logged in as <b>{user.role}</b>.
-        </p>
+        <div className="text-center">
+          <p className="text-lg text-gray-700 mb-4">
+            Welcome, <b>{user.email}</b>! You are logged in as <b>{user.role}</b>.
+          </p>
+          {user.role === "PASSENGER" && (
+            <Link
+              to="/passenger/dashboard"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Go to Passenger Dashboard
+            </Link>
+          )}
+          {user.role === "DRIVER" && (
+            <Link
+              to="/driver/dashboard"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Go to Driver Dashboard
+            </Link>
+          )}
+        </div>
       )}
     </div>
   );
