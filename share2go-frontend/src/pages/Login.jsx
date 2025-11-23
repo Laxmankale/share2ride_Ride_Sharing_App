@@ -25,7 +25,6 @@ export default function Login() {
 
       login(accessToken, { id, name, role });
 
-      // Role-based redirect
       if (role === "driver") {
         navigate("/driver/dashboard");
       } else if (role === "passenger") {

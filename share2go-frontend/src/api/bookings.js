@@ -14,3 +14,18 @@ export async function cancelBooking(bookingId) {
   const res = await api.delete(`/api/bookings/${bookingId}`);
   return res.data;
 }
+
+export async function getBookingsForRide(rideId) {
+  const res = await api.get(`/api/bookings/ride/${rideId}`);
+  return res.data;
+}
+
+export async function updateBookingStatus(bookingId, status) {
+  if (status === 'CONFIRMED') {
+    const res = await api.put(`/api/bookings/${bookingId}/accept`);
+    return res.data;
+  } else if (status === 'REJECTED') {
+    const res = await api.put(`/api/bookings/${bookingId}/reject`);
+    return res.data;
+  }
+}
