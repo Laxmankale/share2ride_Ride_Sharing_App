@@ -53,8 +53,10 @@ public class RideServiceImpl implements RideService {
 
 	@Override
 	public List<RideDTO> searchRides(String origin, String destination, LocalDateTime departureTime) {
-		return rideRepository
-				.findByOriginIgnoreCaseAndDestinationIgnoreCaseAndDepartureTimeAfter(origin, destination, departureTime)
+		if (departureTime == null) {
+			departureTime = LocalDateTime.now();
+		}
+		return rideRepository.searchRides(origin, destination, departureTime)
 				.stream().map(RideMapper::toDTO).collect(Collectors.toList());
 	}
 

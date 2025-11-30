@@ -40,8 +40,9 @@ public class RideController {
 
 	@GetMapping("/search")
 	@PreAuthorize("permitAll()")
-	public ResponseEntity<List<RideDTO>> searchRides(@RequestParam String origin, @RequestParam String destination,
-			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime) {
+	public ResponseEntity<List<RideDTO>> searchRides(@RequestParam(required = false) String origin,
+			@RequestParam(required = false) String destination,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime) {
 		return ResponseEntity.ok(rideService.searchRides(origin, destination, departureTime));
 	}
 

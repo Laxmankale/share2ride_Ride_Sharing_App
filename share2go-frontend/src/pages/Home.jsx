@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import DriverDashboard from "./DriverDashboard";
+import PassengerDashboard from "./PassengerDashboard";
 
 export default function Home() {
   const { user } = useAuth();
@@ -8,6 +9,10 @@ export default function Home() {
   // If user is a driver, show the dashboard immediately
   if (user && (user.role === "DRIVER" || user.role === "Driver")) {
     return <DriverDashboard />;
+  }
+
+  if (user && (user.role === "PASSENGER" || user.role === "Passenger")) {
+    return <PassengerDashboard />;
   }
 
   return (

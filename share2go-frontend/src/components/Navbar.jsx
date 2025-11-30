@@ -108,14 +108,7 @@ export default function Navbar() {
           </>
         )}
 
-        {(user?.role === "Passenger" || user?.role === "PASSENGER") && (
-          <Link
-            to="/passenger/dashboard"
-            className="text-blue-600 font-medium hover:text-blue-800 transition"
-          >
-            Dashboard
-          </Link>
-        )}
+
 
         {!user && (
           <Link
