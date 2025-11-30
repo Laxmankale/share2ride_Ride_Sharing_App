@@ -15,6 +15,7 @@ public class BookingMapper {
 		dto.setNumberOfSeats(booking.getNumberOfSeats());
 		dto.setStatus(booking.getStatus());
 		dto.setBookingTime(booking.getBookingTime());
+		dto.setPassengerName(booking.getPassenger() != null ? booking.getPassenger().getName() : null);
 		return dto;
 	}
 
