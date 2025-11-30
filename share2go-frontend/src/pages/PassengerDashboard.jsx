@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getAllRides, searchRides } from "../api/rides";
 import { createBooking, getPassengerBookings, cancelBooking } from "../api/bookings";
+import PassengerStats from "../components/passenger/PassengerStats";
+import SearchRides from "../components/passenger/SearchRides";
+import AvailableRidesList from "../components/passenger/AvailableRidesList";
+import MyBookingsList from "../components/passenger/MyBookingsList";
+import BookingModal from "../components/passenger/BookingModal";
 
 export default function PassengerDashboard() {
   const { user } = useAuth();
@@ -35,23 +40,17 @@ export default function PassengerDashboard() {
   const loadRides = async () => {
     setLoadingRides(true);
     try {
-      // If search params exist, use search, else get all
-      const hasSearch = searchParams.origin || searchParams.destination || searchParams.departureTime;
-      let data;
-      if (hasSearch) {
-        data = await searchRides(searchParams);
-      } else {
-        // Default load all (paginated usually, but here simplistic)
-        const response = await getAllRides(0, 20);
-        data = response.content || response;
-      }
+      // Create a clean params object with only non-empty values
+      const params = {};
+      if (searchParams.origin) params.origin = searchParams.origin;
+      if (searchParams.destination) params.destination = searchParams.destination;
+      if (searchParams.departureTime) params.departureTime = searchParams.departureTime;
 
-      // Filter for future rides and available seats if getting all (API might not filter)
-      const now = new Date();
+      // Always use searchRides to benefit from backend date filtering (future rides only)
+      // If params is empty, it returns all future rides
+      const data = await searchRides(params);
+
       const rides = Array.isArray(data) ? data : (data.content || []);
-
-      // Simple client side filtering for available seats if API returns all
-      // Ideally API does this.
       setAvailableRides(rides);
     } catch (err) {
       console.error(err);
@@ -162,24 +161,7 @@ export default function PassengerDashboard() {
       <h1 className="text-2xl font-bold mb-6">Passenger Dashboard</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Total Bookings</div>
-          <div className="text-xl font-bold">{stats.totalBookings}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Upcoming Rides</div>
-          <div className="text-xl font-bold">{stats.upcomingRides}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Completed Rides</div>
-          <div className="text-xl font-bold">{stats.completedRides}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Total Spent</div>
-          <div className="text-xl font-bold">₹{stats.totalSpent.toFixed(2)}</div>
-        </div>
-      </div>
+      <PassengerStats stats={stats} />
 
       {/* Tabs */}
       <div className="mb-4 border-b">
@@ -201,171 +183,38 @@ export default function PassengerDashboard() {
       {activeTab === "available" && (
         <div>
           {/* Search Filter */}
-          <div className="bg-white p-4 rounded shadow mb-4">
-            <form onSubmit={handleSearchSubmit} className="flex gap-4 items-end flex-wrap">
-              <div>
-                <label className="block text-sm font-medium">Origin</label>
-                <input
-                  name="origin"
-                  value={searchParams.origin}
-                  onChange={handleSearchChange}
-                  className="border rounded px-3 py-2"
-                  placeholder="From..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Destination</label>
-                <input
-                  name="destination"
-                  value={searchParams.destination}
-                  onChange={handleSearchChange}
-                  className="border rounded px-3 py-2"
-                  placeholder="To..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium">Date</label>
-                <input
-                  type="date"
-                  name="departureTime"
-                  value={searchParams.departureTime}
-                  onChange={handleSearchChange}
-                  className="border rounded px-3 py-2"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-                  Search
-                </button>
-                <button type="button" onClick={clearFilters} className="bg-gray-300 text-black px-4 py-2 rounded">
-                  Clear
-                </button>
-              </div>
-            </form>
-          </div>
+          <SearchRides
+            searchParams={searchParams}
+            handleSearchChange={handleSearchChange}
+            handleSearchSubmit={handleSearchSubmit}
+            clearFilters={clearFilters}
+          />
 
           {/* Rides List */}
-          <div className="grid gap-4">
-            {loadingRides ? (
-              <p>Loading rides...</p>
-            ) : availableRides.length === 0 ? (
-              <p>No rides available.</p>
-            ) : (
-              availableRides.map(ride => (
-                <div key={ride.id} className="bg-white p-4 rounded shadow flex justify-between items-center">
-                  <div>
-                    <div className="font-bold text-lg">{ride.origin} ➝ {ride.destination}</div>
-                    <div className="text-sm text-gray-600">
-                      {new Date(ride.departureTime).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Driver: {ride.driver?.name || "Unknown"}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-green-600">₹{ride.pricePerSeat}</div>
-                    <div className="text-sm text-gray-500">{ride.availableSeats} seats left</div>
-                    <button
-                      className="mt-2 bg-blue-600 text-white px-4 py-1 rounded disabled:opacity-50"
-                      disabled={ride.availableSeats <= 0}
-                      onClick={() => openBookingModal(ride)}
-                    >
-                      Book Now
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <AvailableRidesList
+            rides={availableRides}
+            loading={loadingRides}
+            openBookingModal={openBookingModal}
+          />
         </div>
       )}
 
       {activeTab === "bookings" && (
         <div>
-          <div className="grid gap-4">
-            {loadingBookings ? (
-              <p>Loading bookings...</p>
-            ) : myBookings.length === 0 ? (
-              <p>No bookings found.</p>
-            ) : (
-              myBookings.map(booking => (
-                <div key={booking.id} className="bg-white p-4 rounded shadow flex justify-between items-center">
-                  <div>
-                    <div className="font-bold text-lg">
-                      {booking.ride?.origin} ➝ {booking.ride?.destination}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {new Date(booking.ride?.departureTime).toLocaleString()}
-                    </div>
-                    <div className="mt-1">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
-                          booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                            booking.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                        }`}>
-                        {booking.status}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div>{booking.numberOfSeats} seats</div>
-                    <div className="font-bold">₹{((booking.ride?.pricePerSeat || 0) * booking.numberOfSeats).toFixed(2)}</div>
-                    {booking.status !== 'CANCELLED' && booking.status !== 'REJECTED' && (
-                      <button
-                        className="mt-2 text-red-600 hover:underline text-sm"
-                        onClick={() => handleCancelBooking(booking.id)}
-                      >
-                        Cancel Booking
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <MyBookingsList
+            bookings={myBookings}
+            loading={loadingBookings}
+            handleCancelBooking={handleCancelBooking}
+          />
         </div>
       )}
 
       {/* Booking Modal */}
-      {bookingModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="bg-white rounded p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Book Ride</h2>
-            <div className="mb-4">
-              <p><b>Route:</b> {bookingModal.ride.origin} ➝ {bookingModal.ride.destination}</p>
-              <p><b>Price per seat:</b> ₹{bookingModal.ride.pricePerSeat}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium">Number of Seats</label>
-              <input
-                type="number"
-                min="1"
-                max={bookingModal.ride.availableSeats}
-                value={bookingModal.seats}
-                onChange={(e) => setBookingModal({ ...bookingModal, seats: e.target.value })}
-                className="border rounded px-3 py-2 w-full"
-              />
-            </div>
-            <div className="text-right font-bold mb-4">
-              Total: ₹{(bookingModal.seats * bookingModal.ride.pricePerSeat).toFixed(2)}
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 border rounded"
-                onClick={() => setBookingModal({ open: false, ride: null, seats: 1 })}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-                onClick={handleBookRide}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <BookingModal
+        bookingModal={bookingModal}
+        setBookingModal={setBookingModal}
+        handleBookRide={handleBookRide}
+      />
     </div>
   );
 }
