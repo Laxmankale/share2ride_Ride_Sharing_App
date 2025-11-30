@@ -105,13 +105,6 @@ export default function Navbar() {
             >
               Publish Ride
             </Link>
-
-            <Link
-              to="/driver/dashboard"
-              className="text-blue-600 font-medium hover:text-blue-800 transition"
-            >
-              Dashboard
-            </Link>
           </>
         )}
 
@@ -135,7 +128,7 @@ export default function Navbar() {
 
         {user && (
           <div className="flex items-center gap-4">
-            
+
             {/* Notification Bell */}
             <div className="relative" ref={dropdownRef}>
               <button
@@ -157,7 +150,7 @@ export default function Navbar() {
                     d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
                   />
                 </svg>
-                
+
                 {/* Unread Badge */}
                 {unreadCount > 0 && (
                   <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full transform translate-x-1/4 -translate-y-1/4">
@@ -190,9 +183,8 @@ export default function Navbar() {
                         <div
                           key={notif.id}
                           onClick={() => !notif.readFlag && handleMarkRead(notif.id)}
-                          className={`p-3 border-b last:border-b-0 cursor-pointer hover:bg-gray-50 transition ${
-                            !notif.readFlag ? "bg-blue-50" : ""
-                          }`}
+                          className={`p-3 border-b last:border-b-0 cursor-pointer hover:bg-gray-50 transition ${!notif.readFlag ? "bg-blue-50" : ""
+                            }`}
                         >
                           <div className="flex justify-between items-start">
                             <p className="text-sm text-gray-800">{notif.message}</p>
@@ -201,7 +193,7 @@ export default function Navbar() {
                             )}
                           </div>
                           <div className="text-xs text-gray-400 mt-1">
-                             {notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}
+                            {notif.createdAt ? new Date(notif.createdAt).toLocaleString() : ""}
                           </div>
                         </div>
                       ))

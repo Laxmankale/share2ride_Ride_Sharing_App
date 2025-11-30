@@ -45,11 +45,11 @@ export default function PassengerDashboard() {
         const response = await getAllRides(0, 20);
         data = response.content || response;
       }
-      
+
       // Filter for future rides and available seats if getting all (API might not filter)
       const now = new Date();
       const rides = Array.isArray(data) ? data : (data.content || []);
-      
+
       // Simple client side filtering for available seats if API returns all
       // Ideally API does this.
       setAvailableRides(rides);
@@ -120,7 +120,7 @@ export default function PassengerDashboard() {
     // Trigger loadRides after state update (using effect or direct call with empty)
     // Direct call is safer for immediate reaction
     searchRides({}).then(data => {
-        setAvailableRides(Array.isArray(data) ? data : (data.content || []));
+      setAvailableRides(Array.isArray(data) ? data : (data.content || []));
     }).catch(console.error);
   };
 
@@ -177,7 +177,7 @@ export default function PassengerDashboard() {
         </div>
         <div className="bg-white p-4 rounded shadow">
           <div className="text-sm text-gray-500">Total Spent</div>
-          <div className="text-xl font-bold">${stats.totalSpent.toFixed(2)}</div>
+          <div className="text-xl font-bold">₹{stats.totalSpent.toFixed(2)}</div>
         </div>
       </div>
 
@@ -263,7 +263,7 @@ export default function PassengerDashboard() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-green-600">${ride.pricePerSeat}</div>
+                    <div className="text-lg font-bold text-green-600">₹{ride.pricePerSeat}</div>
                     <div className="text-sm text-gray-500">{ride.availableSeats} seats left</div>
                     <button
                       className="mt-2 bg-blue-600 text-white px-4 py-1 rounded disabled:opacity-50"
@@ -298,19 +298,18 @@ export default function PassengerDashboard() {
                       {new Date(booking.ride?.departureTime).toLocaleString()}
                     </div>
                     <div className="mt-1">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${
-                        booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
-                        booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        booking.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
+                          booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                            booking.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                        }`}>
                         {booking.status}
                       </span>
                     </div>
                   </div>
                   <div className="text-right">
                     <div>{booking.numberOfSeats} seats</div>
-                    <div className="font-bold">${((booking.ride?.pricePerSeat || 0) * booking.numberOfSeats).toFixed(2)}</div>
+                    <div className="font-bold">₹{((booking.ride?.pricePerSeat || 0) * booking.numberOfSeats).toFixed(2)}</div>
                     {booking.status !== 'CANCELLED' && booking.status !== 'REJECTED' && (
                       <button
                         className="mt-2 text-red-600 hover:underline text-sm"
@@ -334,7 +333,7 @@ export default function PassengerDashboard() {
             <h2 className="text-xl font-bold mb-4">Book Ride</h2>
             <div className="mb-4">
               <p><b>Route:</b> {bookingModal.ride.origin} ➝ {bookingModal.ride.destination}</p>
-              <p><b>Price per seat:</b> ${bookingModal.ride.pricePerSeat}</p>
+              <p><b>Price per seat:</b> ₹{bookingModal.ride.pricePerSeat}</p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium">Number of Seats</label>
@@ -348,7 +347,7 @@ export default function PassengerDashboard() {
               />
             </div>
             <div className="text-right font-bold mb-4">
-              Total: ${(bookingModal.seats * bookingModal.ride.pricePerSeat).toFixed(2)}
+              Total: ₹{(bookingModal.seats * bookingModal.ride.pricePerSeat).toFixed(2)}
             </div>
             <div className="flex justify-end gap-2">
               <button

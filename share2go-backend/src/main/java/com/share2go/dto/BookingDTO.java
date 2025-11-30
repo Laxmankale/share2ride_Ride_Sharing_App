@@ -13,6 +13,7 @@ public class BookingDTO {
 	private int numberOfSeats;
 	private String status;
 	private LocalDateTime bookingTime;
+	private String passengerName;
 
 	public Long getId() {
 		return id;
@@ -60,6 +61,14 @@ public class BookingDTO {
 
 	public void setBookingTime(LocalDateTime bookingTime) {
 		this.bookingTime = bookingTime;
+	}
+
+	public String getPassengerName() {
+		return passengerName;
+	}
+
+	public void setPassengerName(String passengerName) {
+		this.passengerName = passengerName;
 	}
 
 }

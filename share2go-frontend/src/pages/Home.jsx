@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import DriverDashboard from "./DriverDashboard";
 
 export default function Home() {
   const { user } = useAuth();
+
+  // If user is a driver, show the dashboard immediately
+  if (user && (user.role === "DRIVER" || user.role === "Driver")) {
+    return <DriverDashboard />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
@@ -32,17 +37,6 @@ export default function Home() {
             >
               Go to Passenger Dashboard
             </Link>
-          )}
-          {user.role === "DRIVER" && (
-            <div className="flex flex-col gap-4">
-              <p className="text-gray-600">Ready to hit the road?</p>
-              <Link
-                to="/driver/dashboard"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-200"
-              >
-                Go to Driver Dashboard
-              </Link>
-            </div>
           )}
         </div>
       )}
