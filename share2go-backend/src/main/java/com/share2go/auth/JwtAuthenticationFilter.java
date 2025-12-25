@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
@@ -25,15 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String path = request.getServletPath();
+
+		return path.startsWith("/auth/") || path.equals("/api/users/register") || path.startsWith("/actuator/");
+	}
+
+	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-
-		String path = request.getRequestURI();
-
-		if (path.equals("/api/users/register") || path.equals("/auth/login") || path.startsWith("/auth/")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
 
 		String header = request.getHeader("Authorization");
 
@@ -50,15 +50,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			UserDetails userDetails = userService.loadUserByUsername(username);
 
-			var auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+			var authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+					userDetails.getAuthorities());
 
-			SecurityContextHolder.getContext().setAuthentication(auth);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		} catch (Exception e) {
+		} catch (Exception ex) {
 			SecurityContextHolder.clearContext();
 		}
 
 		filterChain.doFilter(request, response);
 	}
-
 }
