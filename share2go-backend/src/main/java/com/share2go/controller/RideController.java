@@ -23,7 +23,7 @@ public class RideController {
 	}
 
 	@PostMapping("/driver/{driverId}")
-	@PreAuthorize("hasRole('Driver')")
+	@PreAuthorize("hasRole('DRIVER')")
 	public ResponseEntity<RideDTO> createRide(@PathVariable Long driverId, @RequestBody RideDTO rideDTO) {
 		return ResponseEntity.ok(rideService.createRide(rideDTO, driverId));
 	}
@@ -47,20 +47,20 @@ public class RideController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasRole('Driver')")
+	@PreAuthorize("hasRole('DRIVER')")
 	public ResponseEntity<RideDTO> updateRide(@PathVariable Long id, @RequestBody RideDTO rideDTO) {
 		return ResponseEntity.ok(rideService.updateRide(id, rideDTO));
 	}
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasRole('Driver')")
+	@PreAuthorize("hasRole('DRIVER')")
 	public ResponseEntity<String> deleteRide(@PathVariable Long id) {
 		rideService.deleteRide(id);
 		return ResponseEntity.ok("Ride deleted successfully");
 	}
 
 	@GetMapping("/driver/{driverId}")
-	@PreAuthorize("hasRole('Driver')")
+	@PreAuthorize("hasRole('DRIVER')")
 	public ResponseEntity<List<RideDTO>> getRidesByDriver(@PathVariable Long driverId) {
 		return ResponseEntity.ok(rideService.getRidesByDriver(driverId));
 	}
