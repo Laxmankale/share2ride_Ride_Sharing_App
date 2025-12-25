@@ -22,7 +22,7 @@ public class BookingController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasRole('PASSENGER')")
+	@PreAuthorize("hasRole('Passenger')")
 	public ResponseEntity<BookingDTO> createBooking(@RequestBody BookingDTO bookingDTO) {
 		return ResponseEntity.ok(bookingService.createBooking(bookingDTO));
 	}
@@ -48,7 +48,7 @@ public class BookingController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasRole('PASSENGER')")
+	@PreAuthorize("hasRole('Passenger')")
 	public ResponseEntity<BookingDTO> updateBooking(@PathVariable Long id, @RequestBody BookingDTO bookingDTO) {
 		return ResponseEntity.ok(bookingService.updateBooking(id, bookingDTO));
 	}
