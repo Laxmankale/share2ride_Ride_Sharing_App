@@ -33,7 +33,8 @@ public class SecurityConfig {
 			var config = new org.springframework.web.cors.CorsConfiguration();
 			config.addAllowedOrigin("http://localhost:5173");
 			config.addAllowedOrigin("https://share2ride-ride-sharing-app.onrender.com");
-			config.addAllowedOrigin("https://share2ride-ride-sharing-app.vercel.app");
+			// Allow all Vercel deployments (production and preview)
+			config.addAllowedOriginPattern("https://*.vercel.app");
 			config.addAllowedHeader("*");
 			config.addAllowedMethod("*");
 			config.setAllowCredentials(true);
