@@ -102,6 +102,9 @@ VITE_API_BASE_URL=http://localhost:8080/api
 ### Login Page
 ![Login Page](screenshots/login.png)
 
+### Register Page
+![Register Page](screenshots/register.png)
+
 ### Driver Dashboard
 ![Driver Dashboard](screenshots/driver-dashboard.png)
 
@@ -110,6 +113,9 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 ### Publish Ride
 ![Publish Ride](screenshots/publish-ride.png)
+
+### Booking Modal
+![Booking Modal](screenshots/booking-modal.png)
 
 ## 👨‍💻 Author
 
