@@ -97,6 +97,20 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 > ⚠️ **Security**: Change default JWT secret before production deployment!
 
+## 📸 Screenshots
+
+### Login Page
+![Login Page](screenshots/login.png)
+
+### Driver Dashboard
+![Driver Dashboard](screenshots/driver-dashboard.png)
+
+### Passenger Dashboard
+![Passenger Dashboard](screenshots/passenger-dashboard.png)
+
+### Publish Ride
+![Publish Ride](screenshots/publish-ride.png)
+
 ## 👨‍💻 Author
 
 **Laxman Kale**  
