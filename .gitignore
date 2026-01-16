@@ -1,1 +1,6 @@
 ".vscode" 
+# frontend
+.env
+
+# editor
+.vscode/
